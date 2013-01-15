@@ -1,0 +1,26 @@
+{
+  "name": "http-share",
+  "version": "0.0.1",
+  "author": "Olli K <olli@salaliitto.com>",
+  "description": "Quickly share a directory over http",
+  "keywords": [
+  	"http",
+  	"share"
+  ],
+  "preferGlobal": "true",
+  "main": "./index.js",
+  "bin": { "http-share": "./http-share" },
+  "contributors": [
+    {
+      "name": "Olli K",
+      "email": "olli@salaliitto.com"
+    }
+  ],
+  "engines": {
+    "node": "0.8.x"
+  },
+  "dependencies": {
+  	"express": "3.x.x",
+  	"commander": "1.x.x"
+  }
+}
