@@ -1,5 +1,5 @@
 #http-share
-##v.0.0.1
+##v.0.0.2
 ###by: ok 2013
 
 Share a directory over http with one command.

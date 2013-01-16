@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 var commander = require('commander');
-commander.version('0.0.1')
+commander.version('0.0.2')
          .option('-p, --port [port]', 'Port for server to run on (default 8080)')
          .option('-d, --dir [path]', 'Shared directory (default current working directory)')
          .parse(process.argv);
