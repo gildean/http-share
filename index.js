@@ -1,13 +1,13 @@
 module.exports = function (port, path) {
     "use strict";
     var http = require('http'),
-        express = require('express'),
-        app = express(),
+        connect = require('connect'),
+        app = connect(),
         server = http.createServer(app);
 
-    app.use(express.favicon(__dirname + '/favicon.ico'))
-    app.use(express.static(path));
-    app.use(express.directory(path));
+    app.use(connect.favicon(__dirname + '/favicon.ico'));
+    app.use(connect.static(path));
+    app.use(connect.directory(path));
     app.use(function (req, res) {
         res.send(418, 'No coffee.');
     });
