@@ -3,7 +3,7 @@ var fs = require('fs'),
     path = require('path'),
     util = require('util'),
     command = require('commander')
-            .version('0.1.1')
+            .version('0.1.2')
             .option('-p, --port <port>', 'Port for server to run on (default: 8080)', parseInt)
             .option('-d, --dir <dir>', 'Shared directory (default: current working directory)')
             .option('-a, --auth <username:password>', 'Basic auth, separate username & password with a colon')
@@ -18,7 +18,7 @@ var fs = require('fs'),
     server = require('./server')(port, dir, auth, log);
 
 server.on('listening', function () {
-    util.log('⏣ HTTP-Share ⏣ v.0.1.1 ⏣ ok 2013 ⏣');
+    util.log('⏣ HTTP-Share ⏣ v.0.1.2 ⏣ ok 2013 ⏣');
     util.log('Serving ' + dir + ' on port: ' + server.address().port);
 }).on('logging', function () {
     util.log('Access-log enabled with ' + log + ' messages');
