@@ -1,5 +1,5 @@
 #http-share
-##v.0.1.0
+##v.0.1.1
 ###by: ok 2013
 
 Share a directory over http with one command.
@@ -8,15 +8,17 @@ Share a directory over http with one command.
 
 Install globally with `npm install -g http-share`
 
-Then create a new share from anywhere with `http-share`
+Then create a new share from anywhere with `http-share [options]`
 
-You can set a specific port with `-p port` and a specific directory with `-d /dir/to/share`
+  Options _(all are optional)_ :
 
-Help is printed out with `http-share -h` or `http-share --help`
+    -h, --help                      output usage information
+    -V, --version                   output the version number
+    -p, --port <port>               Port for server to run on (default: 8080)
+    -d, --dir <dir>                 Shared directory (default: current working directory)
+    -a, --auth <username:password>  Basic auth, separate username & password with a colon
+    -l, --log [level]               Enable access-log. Levels: default, short, tiny, dev
 
-By default the port is 8080 and the directory is the current working directory (where you called `http-share`)
-
-If no index is found in the shared dir, a directory-listing is created automagically (with connect.directory)
 
 ##License
 

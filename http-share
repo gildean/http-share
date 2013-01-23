@@ -1,10 +1,36 @@
 #!/usr/bin/env node
-var command = require('commander')
-            .version('0.1.0')
-            .option('-p, --port [port]', 'Port for server to run on (default 8080)')
-            .option('-d, --dir [path]', 'Shared directory (default current working directory)')
+var fs = require('fs'),
+    path = require('path'),
+    util = require('util'),
+    command = require('commander')
+            .version('0.1.1')
+            .option('-p, --port <port>', 'Port for server to run on (default: 8080)', parseInt)
+            .option('-d, --dir <dir>', 'Shared directory (default: current working directory)')
+            .option('-a, --auth <username:password>', 'Basic auth, separate username & password with a colon')
+            .option('-l, --log [level]', 'Enable access-log. Levels: default, short, tiny, dev')
             .parse(process.argv),
 
+    defaultAuth = 'username:password',
     port = command.port || 8080,
-    path = command.dir || process.cwd(),
-    server = require('./index')(port, path);
+    dir = (fs.existsSync(command.dir)) ? (fs.statSync(command.dir).isDirectory()) ? command.dir : path.dirname(command.dir) : process.cwd(),
+    auth = (command.auth) ? (command.auth.indexOf(':') > -1) ? command.auth : defaultAuth : null,
+    log = (command.log) ? (command.log !== true) ? command.log : 'default' : null,
+    server = require('./server')(port, dir, auth, log);
+
+server.on('listening', function () {
+    util.log('⏣ HTTP-Share ⏣ v.0.1.1 ⏣ ok 2013 ⏣');
+    util.log('Serving ' + dir + ' on port: ' + server.address().port);
+}).on('logging', function () {
+    util.log('Access-log enabled with ' + log + ' messages');
+}).on('authed', function () {
+    util.log((auth ===defaultAuth) ? 'Basic auth enabled with default username & password (username/password)' : 'Basic auth enabled');
+});
+
+process.on('uncaughtException', function (err) {
+    if (err.code === 'EACCES') {
+        console.log('Administrator permissions required for accessing ports under 1024');
+    } else {
+        console.log(err);
+    }
+    process.exit();
+});

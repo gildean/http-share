@@ -1,14 +1,16 @@
 {
   "name": "http-share",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Olli K <olli@salaliitto.com>",
-  "description": "Quickly share a directory over http",
+  "description": "Share a directory over http with one command",
   "keywords": [
     "http",
-    "share"
+    "share",
+    "static",
+    "server"
   ],
   "preferGlobal": "true",
-  "main": "./index.js",
+  "main": "./server.js",
   "bin": { "http-share": "./http-share" },
   "contributors": [
     {
@@ -21,7 +23,7 @@
     "url": "git://github.com/gildean/http-share.git"
   },
   "engines": {
-    "node": "0.8.x"
+    "node": ">=0.6.x"
   },
   "dependencies": {
     "connect": "2.7.x",
