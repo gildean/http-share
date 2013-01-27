@@ -2,7 +2,7 @@
 var fs = require('fs'),
     path = require('path'),
     util = require('util'),
-    v = '0.1.4',
+    v = '0.1.5',
     command = require('commander')
             .version(v)
             .option('-p, --port <port>', 'Port for server to run on (default: 8080)', parseInt)
@@ -17,7 +17,7 @@ var fs = require('fs'),
     dir = (fs.existsSync(command.dir)) ? (fs.statSync(command.dir).isDirectory()) ? command.dir : path.dirname(command.dir) : process.cwd(),
     auth = (command.auth) ? (command.auth.indexOf(':') > -1) ? command.auth : defaultAuth : null,
     log = (command.log) ? (command.log !== true) ? command.log : 'default' : null,
-    nodirlists = command.nodirlists || null;
+    nodirlists = command.nodirlists || null,
     server = require('./server')(port, dir, auth, log, nodirlists),
     stdin = process.stdin;
     stdin.setRawMode(true);
@@ -40,6 +40,8 @@ server.on('listening', function () {
     util.log('Access-log enabled with ' + log + ' messages');
 }).on('authed', function () {
     util.log((auth === defaultAuth) ? 'Basic auth enabled with default username & password (username/password)' : 'Basic auth enabled');
+}).on('nodirlists', function () {
+    util.log('Automatic directory listing disabled');
 });
 
 process.on('uncaughtException', function (err) {

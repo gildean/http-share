@@ -29,6 +29,10 @@ module.exports = function (port, path, auth, log, nodirlists) {
     // the directorylistings are created unless explicitly disabled
     if (!nodirlists) {
         app.use(connect.directory(path));
+    } else {
+        process.nextTick(function () {
+            server.emit('nodirlists');
+        });
     }
     
     // a fallback response for everything that falls through
