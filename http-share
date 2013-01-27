@@ -2,13 +2,14 @@
 var fs = require('fs'),
     path = require('path'),
     util = require('util'),
-    v = '0.1.3',
+    v = '0.1.4',
     command = require('commander')
             .version(v)
             .option('-p, --port <port>', 'Port for server to run on (default: 8080)', parseInt)
             .option('-d, --dir <dir>', 'Shared directory (default: current working directory)')
             .option('-a, --auth <username:password>', 'Basic auth, separate username & password with a colon')
             .option('-l, --log [level]', 'Enable access-log. Levels: default, short, tiny, dev')
+            .option('-n, --nodirlists', 'Disable directory listings (index-files will still be used)')
             .parse(process.argv),
 
     defaultAuth = 'username:password',
@@ -16,7 +17,8 @@ var fs = require('fs'),
     dir = (fs.existsSync(command.dir)) ? (fs.statSync(command.dir).isDirectory()) ? command.dir : path.dirname(command.dir) : process.cwd(),
     auth = (command.auth) ? (command.auth.indexOf(':') > -1) ? command.auth : defaultAuth : null,
     log = (command.log) ? (command.log !== true) ? command.log : 'default' : null,
-    server = require('./server')(port, dir, auth, log),
+    nodirlists = command.nodirlists || null;
+    server = require('./server')(port, dir, auth, log, nodirlists),
     stdin = process.stdin;
     stdin.setRawMode(true);
     stdin.resume();
