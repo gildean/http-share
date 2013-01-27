@@ -2,8 +2,9 @@
 var fs = require('fs'),
     path = require('path'),
     util = require('util'),
+    v = '0.1.3',
     command = require('commander')
-            .version('0.1.2')
+            .version(v)
             .option('-p, --port <port>', 'Port for server to run on (default: 8080)', parseInt)
             .option('-d, --dir <dir>', 'Shared directory (default: current working directory)')
             .option('-a, --auth <username:password>', 'Basic auth, separate username & password with a colon')
@@ -15,20 +16,35 @@ var fs = require('fs'),
     dir = (fs.existsSync(command.dir)) ? (fs.statSync(command.dir).isDirectory()) ? command.dir : path.dirname(command.dir) : process.cwd(),
     auth = (command.auth) ? (command.auth.indexOf(':') > -1) ? command.auth : defaultAuth : null,
     log = (command.log) ? (command.log !== true) ? command.log : 'default' : null,
-    server = require('./server')(port, dir, auth, log);
+    server = require('./server')(port, dir, auth, log),
+    stdin = process.stdin;
+    stdin.setRawMode(true);
+    stdin.resume();
+    stdin.setEncoding('utf8');
+
+stdin.on('data', function(key){
+  if (['\u0003', 'q', 'x', '\u001B'].indexOf(key) > -1) {
+    util.log('Shutting down server...');
+    process.exit();
+  } else {
+    util.log('Unrecognized command, press \'esc\', \'q\', \'x\' or \'ctrl\' + \'c\' to quit');
+  }
+});
 
 server.on('listening', function () {
-    util.log('⏣ HTTP-Share ⏣ v.0.1.2 ⏣ ok 2013 ⏣');
+    util.log('⏣ HTTP-Share ⏣ ' + v + ' ⏣ ok 2013 ⏣');
     util.log('Serving ' + dir + ' on port: ' + server.address().port);
 }).on('logging', function () {
     util.log('Access-log enabled with ' + log + ' messages');
 }).on('authed', function () {
-    util.log((auth ===defaultAuth) ? 'Basic auth enabled with default username & password (username/password)' : 'Basic auth enabled');
+    util.log((auth === defaultAuth) ? 'Basic auth enabled with default username & password (username/password)' : 'Basic auth enabled');
 });
 
 process.on('uncaughtException', function (err) {
     if (err.code === 'EACCES') {
         console.log('Administrator permissions required for accessing ports under 1024');
+    } else if (err.code === 'EADDRINUSE') {
+        console.log('Port ' + port + ' already in use, try another port or try \'http-share -h\' for help');
     } else {
         console.log(err);
     }

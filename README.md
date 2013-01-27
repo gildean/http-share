@@ -1,5 +1,5 @@
 #http-share
-##v.0.1.2
+##v.0.1.3
 ###by: ok 2013
 
 Share a directory over http with one command.
@@ -19,6 +19,9 @@ Then create a new share from anywhere with `http-share [options]`
     -a, --auth <username:password>  Basic auth, separate username & password with a colon
     -l, --log [level]               Enable access-log. Levels: default, short, tiny, dev
 
+Press 'esc', 'q', 'x' or 'ctrl' + 'c' to stop the server.
+
+Directory listings are created automatically, unless an index is found.
 
 ##License
 
