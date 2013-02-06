@@ -1,5 +1,5 @@
 #http-share
-##v.0.1.5
+##v.0.1.6
 ###by: ok 2013
 
 Share a directory over http with one command.
@@ -18,7 +18,8 @@ Then create a new share from anywhere with `http-share [options]`
     -d, --dir <dir>                 Shared directory (default: current working directory)
     -a, --auth <username:password>  Basic auth, separate username & password with a colon
     -l, --log [level]               Enable access-log. Levels: default, short, tiny, dev
-    -n, --nodirlists                Disable directory listings (index-files will still be used)
+    -n, --nodirlists                Disable automatic directory listings
+    -s, --ssl <key.pem>,<cert.pem>  Enable ssl encryption, separate filenames with a comma
 
 Press 'esc', 'q', 'x' or 'ctrl' + 'c' to stop the server.
 

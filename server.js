@@ -1,28 +1,57 @@
-module.exports = function (port, path, auth, log, nodirlists) {
+module.exports = function (ssl, port, path, auth, log, nodirlists) {
     "use strict";
-    var http = require('http'),
-        connect = require('connect'),
+    var connect = require('connect'),
         app = connect(),
-        server = http.createServer(app).listen(port),
-        usr;
+        fs = require('fs'),
+        usr, server, options, secure, key, cert;
+    
+    function emitNextTick(ev, msg) {
+        process.nextTick(function () {
+            server.emit(ev, msg);
+        });
+    }
+
+    function throwErr(err) {
+        console.log(err);
+        process.exit();
+    }
+
+    if (ssl) {
+        secure = ssl.split(',');
+        key = (fs.existsSync(secure[0]) && fs.statSync(secure[0]).isFile()) ? secure[0] : null;
+        cert = (fs.existsSync(secure[1]) && fs.statSync(secure[1]).isFile()) ? secure[1] : null;
+        console.log(key + ' ' + cert);
+        if (key && cert) {
+            options = {
+                key: fs.readFileSync(key),
+                cert: fs.readFileSync(cert)
+            };
+            server = require('https').createServer(options, app).listen(port);
+            emitNextTick('secure');
+        } else {
+            throwErr('Error: Could not read cert or key file.');
+        }
+    } else {
+        server = require('http').createServer(app).listen(port);
+    }
 
     // we need to wait for one tick before emitting events, so that the server is actually returned first
     if (auth) {
         usr = auth.split(':');
         app.use(connect.basicAuth(usr[0], usr[1]));
-        process.nextTick(function () {
-            server.emit('authed');
-        });
+        emitNextTick('authed');
     }
     
     if (log) {
-        app.use(connect.logger(log));
-        process.nextTick(function () {
-            server.emit('logging');
-        });
+        if (['default', 'short', 'tiny', 'dev'].indexOf(log) > -1) {
+            app.use(connect.logger(log));
+            emitNextTick('logging');
+        } else {
+            throwErr('Error: Unknown logging level');
+        }
     }
 
-    // static middleware handles reqs for favicons first, the favicon-middleware is a fallback
+    // static middleware handles reqs (also for favicons)first, the favicon-middleware is a fallback
      app.use(connect.static(path))
         .use(connect.favicon(__dirname + '/favicon.ico'));
     
@@ -30,9 +59,7 @@ module.exports = function (port, path, auth, log, nodirlists) {
     if (!nodirlists) {
         app.use(connect.directory(path));
     } else {
-        process.nextTick(function () {
-            server.emit('nodirlists');
-        });
+        emitNextTick('nodirlists');
     }
     
     // a fallback response for everything that falls through

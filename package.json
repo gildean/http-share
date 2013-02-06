@@ -1,10 +1,11 @@
 {
   "name": "http-share",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": "Olli K <olli@salaliitto.com>",
   "description": "Share a directory over http with one command",
   "keywords": [
     "http",
+    "https",
     "share",
     "static",
     "server"

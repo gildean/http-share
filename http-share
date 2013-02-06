@@ -2,7 +2,7 @@
 var fs = require('fs'),
     path = require('path'),
     util = require('util'),
-    v = '0.1.5',
+    v = '0.1.6',
     command = require('commander')
             .version(v)
             .option('-p, --port <port>', 'Port for server to run on (default: 8080)', parseInt)
@@ -10,6 +10,7 @@ var fs = require('fs'),
             .option('-a, --auth <username:password>', 'Basic auth, separate username & password with a colon')
             .option('-l, --log [level]', 'Enable access-log. Levels: default, short, tiny, dev')
             .option('-n, --nodirlists', 'Disable directory listings (index-files will still be used)')
+            .option('-s, --ssl </path/to/key.pem>,</path/to/cert.pem>', 'Enable ssl encryption, separate filenames with a comma')
             .parse(process.argv),
 
     defaultAuth = 'username:password',
@@ -17,8 +18,9 @@ var fs = require('fs'),
     dir = (fs.existsSync(command.dir)) ? (fs.statSync(command.dir).isDirectory()) ? command.dir : path.dirname(command.dir) : process.cwd(),
     auth = (command.auth) ? (command.auth.indexOf(':') > -1) ? command.auth : defaultAuth : null,
     log = (command.log) ? (command.log !== true) ? command.log : 'default' : null,
+    ssl = (command.ssl && command.ssl.indexOf(',') > -1) ? command.ssl : null, 
     nodirlists = command.nodirlists || null,
-    server = require('./server')(port, dir, auth, log, nodirlists),
+    server = require('./server')(ssl, port, dir, auth, log, nodirlists),
     stdin = process.stdin;
     stdin.setRawMode(true);
     stdin.resume();
@@ -36,6 +38,8 @@ stdin.on('data', function(key){
 server.on('listening', function () {
     util.log('⏣ HTTP-Share ⏣ ' + v + ' ⏣ ok 2013 ⏣');
     util.log('Serving ' + dir + ' on port: ' + server.address().port);
+}).on('secure', function () {
+    util.log('SSL(HTTPS) encryption enabled');
 }).on('logging', function () {
     util.log('Access-log enabled with ' + log + ' messages');
 }).on('authed', function () {
